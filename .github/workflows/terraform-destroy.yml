@@ -1,0 +1,37 @@
+name: Destroy Azure VM with Terraform
+
+on:
+  workflow_dispatch:  # Manual trigger from GitHub UI
+
+jobs:
+  destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ADMIN_SSH_PUBLIC_KEY: ${{ secrets.ADMIN_SSH_PUBLIC_KEY }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: .
+
+    - name: Terraform Destroy
+      run: |
+        terraform destroy -auto-approve \
+          -var "client_id=$ARM_CLIENT_ID" \
+          -var "client_secret=$ARM_CLIENT_SECRET" \
+          -var "tenant_id=$ARM_TENANT_ID" \
+          -var "subscription_id=$ARM_SUBSCRIPTION_ID" \
+          -var "admin_ssh_public_key=$ADMIN_SSH_PUBLIC_KEY"
+      working-directory: .
