@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - main
-
+  pull_request:
+    branches:
+      - main
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -25,6 +27,11 @@ jobs:
     - name: Terraform Init
       run: terraform init
 
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Terraform Plan
       run: terraform plan -var "client_id=$ARM_CLIENT_ID" -var "client_secret=$ARM_CLIENT_SECRET" -var "tenant_id=$ARM_TENANT_ID" -var "subscription_id=$ARM_SUBSCRIPTION_ID"
 
@@ -34,3 +41,4 @@ jobs:
 
       - name: Terraform destroy
       run: terraform destroy -auto-approve
+      
