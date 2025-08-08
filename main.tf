@@ -48,6 +48,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   ]
 
   admin_password = "P@ssword1234!" # Use SSH keys in production
+  disable_password_authentication = false
 
   os_disk {
     caching              = "ReadWrite"
